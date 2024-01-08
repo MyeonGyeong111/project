@@ -1,0 +1,248 @@
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+void _load_(string str1, string** a, string** b) {
+	ifstream if1;
+	string str11;
+	if1.open(str1);
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++) {
+			str11 = if1.get();
+			if (str11 == "\n") {
+				str11 = if1.get();
+				a[i][j] = str11;
+			}
+			else {
+				a[i][j] = str11;
+			}
+
+		}
+	if1.close();
+	if1.open(str1);
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++) {
+			str11 = if1.get();
+			if (str11 == "\n") {
+				str11 = if1.get();
+				b[i][j] = str11;
+			}
+			else {
+				b[i][j] = str11;
+			}
+
+		}
+
+}
+
+bool _touch_(int x, int y,string output,string **array1,string **array2,string **array3,int &i4) {
+	ofstream of1(output,ios::app);
+	of1 << "Command: touch " << x << " " << y << endl;
+	if (array1[x - 1][y - 1] == "*") {
+		array2[x - 1][y - 1] = "*";
+		i4++;
+		return false;
+	}
+	else {
+		int check = 0;
+		if (x == 1 && y == 1) {
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 2; j++) {
+					if (array1[i][j] == "*")
+						check++;
+				}
+			}
+			array2[x - 1][y - 1] = check + 48;
+			array3[x - 1][y - 1] = check + 48;
+		}
+
+		else if (x == 1 && y != 1 && y != 8) {
+			for (int i = 0; i < 2; i++) {
+				for (int j = y - 2; j < y + 1; j++) {
+					if (array1[i][j] == "*")
+						check++;
+				}
+			}
+			array2[x - 1][y - 1] = check + 48;
+			array3[x - 1][y - 1] = check + 48;
+		}
+
+		else if (x == 1 && y == 8) {
+			for (int i = 0; i < 2; i++) {
+				for (int j = 6; j < 8; j++) {
+					if (array1[i][j] == "*")
+						check++;
+				}
+			}
+			array2[x - 1][y - 1] = check + 48;
+			array3[x - 1][y - 1] = check + 48;
+		}
+
+		else if (x == 8 && y == 1) {
+			for (int i = 6; i < 8; i++) {
+				for (int j = 0; j < 2; j++) {
+					if (array1[i][j] == "*")
+						check++;
+				}
+			}
+			array2[x - 1][y - 1] = check + 48;
+			array3[x - 1][y - 1] = check + 48;
+		}
+
+		else if (x != 8 && y == 1 && x != 1) {
+			for (int i = x - 2; i < x + 1; i++) {
+				for (int j = 0; j < 2; j++) {
+					if (array1[i][j] == "*")
+						check++;
+				}
+			}
+			array2[x - 1][y - 1] = check + 48;
+			array3[x - 1][y - 1] = check + 48;
+		}
+
+		else if (x == 8 && y == 8) {
+			for (int i = 6; i < 8; i++) {
+				for (int j = 6; j < 8; j++) {
+					if (array1[i][j] == "*")
+						check++;
+				}
+			}
+			array2[x - 1][y - 1] = check + 48;
+			array3[x - 1][y - 1] = check + 48;
+		}
+
+		else if (x == 8 && y != 1 && y != 8) {
+			for (int i = 6; i < 8; i++) {
+				for (int j = y - 2; j < y + 1; j++) {
+					if (array1[i][j] == "*")
+						check++;
+				}
+			}
+			array2[x - 1][y - 1] = check + 48;
+			array3[x - 1][y - 1] = check + 48;
+		}
+
+		else if (x != 8 && y == 8 && x != 1) {
+			for (int i = x - 2; i < x + 1; i++) {
+				for (int j = 6; j < 8; j++) {
+					if (array1[i][j] == "*")
+						check++;
+				}
+			}
+			array2[x - 1][y - 1] = check + 48;
+			array3[x - 1][y - 1] = check + 48;
+		}
+
+		else {
+			for (int i = x - 2; i < x + 1; i++) {
+				for (int j = y - 2; j < y + 1; j++) {
+					if (array1[i][j] == "*")
+						check++;
+				}
+			}
+			array2[x - 1][y - 1] = check + 48;
+			array3[x - 1][y - 1] = check + 48;
+		}
+		i4++;
+		if (i4 == 54) {
+			return false;
+		}
+		of1.close();
+		return true;
+	}
+	of1.close();
+}
+
+void _display_(string** a, string str) {
+	ofstream of;
+	of.open(str, ios::app);
+	of << "Command: display" << endl;
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++)
+			of << setw(1) << a[i][j];
+		of << endl;
+	}
+	of << endl;
+	of.close();
+}
+
+void minesweeper(string commands, string output) {
+	bool bo;
+	int i4=0;
+	string** array1 = new string * [8];
+	for (int i = 0; i < 8; i++)
+		array1[i] = new string[8];
+	string** array2 = new string * [8];
+	for (int i = 0; i < 8; i++)
+		array2[i] = new string[8];
+	string** array3 = new string * [8];
+	for (int i = 0; i < 8; i++)
+		array3[i] = new string[8];
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
+			array3[i][j] = ".";
+	string s1, s2, s4;
+	ifstream if1;
+	ofstream of1;
+	if1.open(commands);
+	of1.open(output);
+	getline(if1, s1);
+	if (s1.size() == 19)
+		s2 = s1.substr(5, 14);
+	else
+		s2 = s1.substr(5, 15);
+	_load_(s2, array1, array2);
+	of1 << "Command: " << s1 << endl;
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
+			if (array2[i][j] == "*")
+				array2[i][j] = "@";
+	of1.close();
+	while (getline(if1, s1)) {
+		int x, y;
+		if (s1 == "display") {
+			_display_(array3, output);
+			continue;
+		}
+		else if (s1.substr(0, 5) == "touch") {
+			x = s1[6] - 48;
+			y = s1[8] - 48;
+			of1.close();
+			bo=_touch_(x, y, output,array1, array2, array3,i4);
+			if (bo == false)
+				break;
+			continue;
+		}
+		else
+			continue;
+	}
+	of1.open(output, ios::app);
+	of1 << "Game Over" << endl;
+	of1 << "~~~~~~~~~" << endl;
+	of1 << "Final Board" << endl;
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++)
+			of1 << setw(1) << array2[i][j];
+		of1 << endl;
+	}
+	of1 << endl;
+	of1 << "Spaces touched: " << i4;
+	of1 << endl;
+	for (int i = 0; i < 8; i++)
+		delete[] array1[i];
+	delete[] array1;
+
+	for (int i = 0; i < 8; i++)
+		delete[] array2[i];
+	delete[] array2;
+
+	for (int i = 0; i < 8; i++)
+		delete[] array3[i];
+	delete[] array3;
+
+	if1.close();
+	of1.close();
+}
